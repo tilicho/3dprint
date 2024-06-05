@@ -6,6 +6,7 @@ H = 16;
 DH = 5.4;
 E = 0.01;
 WALL = 1.2;
+INNER_HEX = "M5"; //["M3", "M4", "M5", "M6"]
 
 $fn = 100;
 CUT = false;
@@ -29,5 +30,5 @@ cyl(d=DH, h = H+E);
 
 
 translate([0,0,-H/2 + WALL])
-nut_trap_inline(H, "M5", $slop=0.2);
+nut_trap_inline(H, INNER_HEX, $slop=0.2);
 }

@@ -26,7 +26,7 @@ PDH = 0.8;
 PCUTW = 20;
 
 FRAME = true;
-FY = 64;
+FY = 74;
 FW = 2.4;
 FZ = 20;
 RFRAME = 1.2;

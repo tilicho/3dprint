@@ -3,9 +3,9 @@ include <BOSL2/screws.scad>
 
 D1 = 50.0;//[0:0.1:100]
 D2 = 45.0;//[0:0.1:100]
-H = 65.0;//[0:0.1:100]
-W = 2.4;//[0:0.1:100]
-Wh = 1.8;//[0:0.1:100]
+H = 65.0;//[0:0.1:200]
+W = 1.2;//[0:0.1:100]
+Wh = 1.2;//[0:0.1:100]
 Hhat = 10.0;//[0:0.1:100]
 E = 0;////[0:0.1:100]
 
@@ -19,6 +19,14 @@ module perform_cut()
     if (CUT)
         front_half(s=200) children();
     else children();
+}
+
+module rotate_head()
+{
+    if (!BODY)
+        rotate([180, 0, 0]) children();
+    else
+        children();
 }
 
 module obj()
@@ -39,6 +47,7 @@ if (BODY)
 
 if (HAT)
 {
+    rotate_head()   
     translate([0,0,H/2-Wh*2])
     difference()
     {

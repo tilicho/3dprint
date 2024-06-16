@@ -13,16 +13,16 @@ WS = 15;
 
 H3 = 8 + DX;
 W = 1.2;//[0:0.1:100]
-W0 = 2.4;
+W0 = 1.6;
 
 //Wh = 1.2;//[0:0.1:100]
 //Hhat = 10.0;//[0:0.1:100]
 E = 0.1;////[0:0.1:100]
 
 $fn = 50;
-CUT = false;
-HAT = false;
-BODY = true;
+CUT = true;
+
+//BODY = true;
 
 R = 2;
 
@@ -33,13 +33,6 @@ module perform_cut()
     else children();
 }
 
-module rotate_head()
-{
-    if (!BODY)
-        rotate([180, 0, 0]) children();
-    else
-        children();
-}
 
 module selector()
 {
@@ -51,14 +44,12 @@ module selector()
 module obj()
 {
 
-if (BODY)
-{
     difference()
     {
 
     cyl(d = D2+2*W0, d2 = D1+2*W0, h = H, chamfer1=R, anchor=BOTTOM);
 
-    translate([0,0,W0])
+    translate([0,0,W])
     cyl(d = D2, d2 = D1, h = H, chamfer1=R, anchor=BOTTOM);
     
     }
@@ -109,7 +100,6 @@ if (BODY)
         
         }
     }
-}
 
 }
 

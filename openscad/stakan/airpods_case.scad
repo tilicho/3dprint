@@ -1,8 +1,9 @@
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
 
-W = 1.8;//[0:0.1:100]
+W = 1.2;//[0:0.1:100]
 Wh = 1.2;//[0:0.1:100]
+WdiffH = 0.6;
 WhBot = 1.2;
 E = 0.3;////[0:0.1:100]
 
@@ -26,7 +27,7 @@ $fn = 50;
 CUT = true;
 HAT = true;
 BODY = true;
-PODS = true;
+PODS = false;
 
 
 CIRCLE_D = 2.0 * (Hhat * 2.0 / 3.0);
@@ -129,13 +130,6 @@ module rprismoid_ext(x1,y1,x2,y2,r,h, except=TOP)
 module rprismoid2(x1,y1,x2,y2,r,h, except=BOTTOM)
 {
     rprismoid_ext(x1,y1,x2,y2,r,h,except);
-    /*
-    prismoid([x1, y1], [x2, y2], 
-        //rounding=CH2, 
-        chamfer=CH_EXT,
-        h = h);
-   */
-
 }
 
 module body()
@@ -169,16 +163,20 @@ module hat(rot=true,except=EDGES_ALL)
     translate([0,0,H - Hhat])//+ Wh*2])
     difference()
     {
+    d2ext = e + 2*WdiffH + space + 2*Wh;
 
-    rprismoid2(D2 + e + 2*W + space, DY2 + e + 2*W + space,
-            D2 + e +2*W + space, DY2 + e +2*W + space, 
-            R, Hhat);//, except);
+    rprismoid2(
+        D2 + d2ext, DY2 + d2ext,
+        D2 + d2ext, DY2 + d2ext, 
+        R, Hhat);//, except);
     //cyl(d = D1 + E + 2*Wh, h = Hhat);
 
+    d2ext2 = e + 2*WdiffH;
+    
     translate([0,0,-WhBot])
     rprismoid2(
-        D2 + e+2*W - 2*Wh, DY2 - 2*Wh +e+2*W, 
-        D2 + e+2*W - 2*Wh, DY2 +e+2*W - 2*Wh, 
+        D2 + d2ext2, DY2 +d2ext2, 
+        D2 + d2ext2, DY2 +d2ext2, 
         R, Hhat);//, except);
     //cyl(d = D1 + E,  h = Hhat);
 

@@ -14,6 +14,7 @@ E = 0.1;
 
 D1 = 3;
 D2 = 6.6;
+D3 = 8;
 DH = 15;
 $fn = 50;
 
@@ -25,17 +26,25 @@ PW = 1.2;
 PDH = 0.8;
 PCUTW = 20;
 
-FRAME = false;
+FRAME = true;
 FY = 74;
 FW = 2.4;
 FZ = 20;
 RFRAME = 1.2;
 
-MASK_W = 1.2;
-MASK_H = 1.2;
+MASK_W = 5;
+MASK_H = 1.8;
+PROT_MASK_N = 8;
+WIRE_H = 1.8;
 
 PROTECTOR2 = true;
-
+CUT=false;
+module perform_cut()
+{
+    if (CUT)
+        front_half(s=200) children();
+    else children();
+}
 
 module binding()
 {
@@ -71,13 +80,13 @@ module binding()
 
 module rotate_protector()
 {
-    if (PROTECTOR && !BINDING && !FRAME)
+    if (PROTECTOR && !BINDING && !FRAME && !PROTECTOR2)
         rotate([180,0,0]) children();
     else
         children();
 }
 
-module prot_mask(d, w, kn=6)
+module prot_mask(d, w, kn=PROT_MASK_N)
 {
     n = d / (kn * MASK_W);
     
@@ -101,7 +110,7 @@ module prot_mask(d, w, kn=6)
     difference()
     {
         zcyl(d = d+w*2, h = MASK_H);
-        zcyl(d = d, h = MASK_H+E);
+        zcyl(d = d-w*2, h = MASK_H+E);
     };
 
 }
@@ -144,22 +153,47 @@ module protector2()
     prot_mask(PD, PW);
     
     xflip_copy()
-    translate([-L/2-W, L2/2-W/2, H/2])
+    translate([-L/2-W*3.5-E, L2/2-W/2, H/2])
     {
+        difference()
+        {
+            cuboid([W, L2, H2],
+                rounding=R, edges="Z");
+
+            xcyl(l=W+E, d = D2, $fn = 10);
+        }
+    }
+    
     difference()
     {
-        cuboid([W, L2, H2],
-            rounding=R, edges="Z");
-
-        xcyl(l=W+E, d = D2, $fn = 10);
+        translate([0, L2/2-W/2, -H/2-PW/2])
+        cuboid([L+W*8+2*E, L2, MASK_H], rounding=R, edges="Z");
+        
+        translate([0, 0, -H/2-PW/2])
+            zcyl(d = PD+PW*2, h = MASK_H+E);
+        
     }
+    
+    translate([0, 0, -H/2-PW/2-MASK_H/2])
+    difference()
+    {
+        translate([0, -PW*2, 0])
+       cuboid([PCUTW-2, PD+PW*2, H2-WIRE_H], 
+                rounding=R, edges="Z", 
+                anchor=BOTTOM);
+                
+       
+       translate([0, L2/2-PDY+PW, 0])
+       zcyl(d = PD, h = H2-WIRE_H+E, anchor=BOTTOM);
+    }
+                
 }
 
 module frame()
 {
     dz = (FZ-H2)/2;
     xflip_copy()
-    translate([-L/2-W-FW, L2/2-W/2, H/2])
+    translate([-L/2-W*3.5-FW, L2/2-W/2, H/2])
     {
         difference()
         {
@@ -178,14 +212,14 @@ module frame()
      {
         difference()
         {
-            cuboid([L+2*FW+2*W+RFRAME*2, FW, FZ], 
+            cuboid([L+2*FW+W*7+RFRAME*2, FW, FZ], 
                rounding=RFRAME, edges="Z");
 
             xflip_copy()
             translate([DH, 0, 0])
-                ycyl(l = FW+E, d = D2, $fn = 8);
+                ycyl(l = FW+E, d = D3, $fn = 8);
 
-            ycyl(l = FW+E, d = D2, $fn = 8);
+            ycyl(l = FW+E, d = D3, $fn = 8);
         }
         
         xflip_copy()
@@ -194,6 +228,8 @@ module frame()
      }
 }
 
+perform_cut()
+{
 if (BINDING)
 binding();
 
@@ -203,11 +239,12 @@ if (PROTECTOR)
             protector();
             
 if (PROTECTOR2)
-    rotate_protector()
-        color("green")
+    
+        color("blue")
             protector2();
             
 
 if (FRAME)
     color("green")
         frame();
+}

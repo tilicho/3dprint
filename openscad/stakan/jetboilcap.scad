@@ -15,16 +15,26 @@ H3 = 8 + DX;
 W = 1.2;//[0:0.1:100]
 W0 = 1.6;
 
-//Wh = 1.2;//[0:0.1:100]
-//Hhat = 10.0;//[0:0.1:100]
+Wh = 1.2;//[0:0.1:100]
+Hhat = 10.0;//[0:0.1:100]
 E = 0.1;////[0:0.1:100]
 
-$fn = 50;
-CUT = true;
+$fn = 150;
+CUT = false;
 
-//BODY = true;
-
+BODY = false;
+HEAD = true;
 R = 2;
+
+
+
+module rotate_head()
+{
+    if (!BODY)
+        rotate([180, 0, 0]) children();
+    else
+        children();
+}
 
 module perform_cut()
 {
@@ -41,7 +51,7 @@ module selector()
     cube([D3/2,WS,DX], anchor=BOTTOM);
 }
 
-module obj()
+module body()
 {
 
     difference()
@@ -103,6 +113,31 @@ module obj()
 
 }
 
+module head()
+{
+    color("green")
+    rotate_head()   
+    translate([0,0,H+H2+H3-Hhat+2*W+E])
+    difference()
+    {
 
+    cyl(d = D3 + E + 2*Wh + 2*W, h = Hhat, 
+        //chamfer2=R,
+        anchor=BOTTOM);
+
+    translate([0,0,-Wh])
+    cyl(d = D3 + E + 2*W,  h = Hhat,
+        //chamfer2=R,
+        anchor=BOTTOM);
+
+    }
+}
+
+
+if (BODY)
 perform_cut()
-obj();
+body();
+
+if (HEAD)
+perform_cut()
+head();

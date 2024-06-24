@@ -22,9 +22,9 @@ SLOP = 0.1;
 CUT = false;
 $fn=50;
 
-module perform_cut()
+module perform_cut(cut=CUT)
 {
-    if (CUT)
+    if (cut)
         front_half(s=200) children();
     else children();
 }

@@ -12,12 +12,22 @@ E = 0.1;
 EPX = 0.2;
 EPZ = 0.4;
 
+PhoneModel = "IPhone5"; //["IPhone5", "IPhone13"]
+
+function get_phone_x(model) = model == "IPhone13" ? 64.8 : 59;
+function get_phone_y(model) = model == "IPhone13" ? 8.4 : 7.7;
+
+Phone_x_ = get_phone_x(PhoneModel);
+Phone_z_ = get_phone_y(PhoneModel);
+Phone_offset_ = 25.2;
+Phone_offset2 = 31.25 - 4.5;
+
 HoleZ = 2;
 HoleD = 5;
 
-Phone_x_ = 64.4;//59;
-Phone_z_ = 8.2;//7.7;
-Phone_offset = 29;
+//Phone_x_ = 64.4;//59;
+//Phone_z_ = 8.2;//7.7;
+//Phone_offset = 29;
 
 
 
@@ -28,15 +38,19 @@ HookX1 = 24;
 HookX2 = 27;
 HookX3 = 10;
 
-module iphone_mount()
+module iphone_mount(model=PhoneModel,
+    h = H, w = W, epx=EPX, epz=EPZ)
 {
+    dx = get_phone_x(model)+ epx;
+    dz = get_phone_y(model)+ epz;
+    
     difference()
     {
-    cuboid([Phone_x+2*W, H, Phone_z+2*W],
+    cuboid([dx+2*w, h, dz+2*w],
         rounding=R, edges="Y" 
         //,except=[[-1, 1, -1]]
         );
-    cuboid([Phone_x, H+E, Phone_z]
+    cuboid([dx, h+E, dz]
         );
     }
 }

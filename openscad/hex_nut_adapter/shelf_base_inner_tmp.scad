@@ -132,7 +132,7 @@ difference()
             if (ROTATED_TWO_D_CROSS)
             {
                 dx = DX + 4*W + 4*E;
-                dx2 = W*2;
+                dx2 = 0;//W*2;
                 
                 translate([0, dx2, -dx2])
                 cuboid([dx-4*W-4*E,dx,dx]
@@ -156,7 +156,7 @@ difference()
     if (ROTATED_TWO_D_CROSS)
     {
     dx =  DX + 2*W + 4*E;
-    dx2 = W*3/2;
+    dx2 = 0;//W*2;
     translate([0, dx2, -dx2])
     cuboid([dx,dx,dx]); 
     }
@@ -195,7 +195,7 @@ module print_cross()
             if (ROTATED_TWO_D_CROSS)
             {
                 dz = (W*2+L) * cos(45) - (DX*sin(45))/2;
-                translate([0,0,dz])
+                translate([0,0,dz+W])
                 cuboid([L*2, L*2, DX*2], rounding=R,
                     edges = "Z",
                     anchor=BOTTOM);
@@ -226,7 +226,7 @@ module print_cross()
     
     if (ROTATED_TWO_D_CROSS)
     {
-    #translate([0,0,-(2*DX+1*W)*cos(45)+E*4])
+    #translate([0,0,-(2*DX+2*W)*cos(45)-W])
         cuboid([DX, L-W*8, W-E*2], anchor=BOTTOM);
     }
 }

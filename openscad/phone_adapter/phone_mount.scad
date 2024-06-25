@@ -9,12 +9,12 @@ E = 0.1;
 BASE = true;
 LEGS = true;
 LEG = false;
-TOP_HEAD = true;
+TOP_HEAD = false;
 SHOW_MODEL = true;
 SCREW = false;
 SCREW2 = false;
 
-BASE_D = 13;//12;
+BASE_D = 18;//12;
 BASE_DI = 9;
 BASE_W = 5;//5;
 BASE_H = 13;
@@ -61,34 +61,32 @@ module base()
 difference()
 {
 cyl(d= BASE_D, l=BASE_H);
-hole(hole_len=BASE_H+E, thread=false);
-//cyl(d = BASE_DI, l=BASE_H+E);
+//hole(hole_len=BASE_H+E, thread=false);
 }
 
 #zrot_copies(n=3)
 translate([BASE_D/2-RC+BASE_SHIFT_LEG+0.5, 0, 0])
-connection(h=BASE_H, 
+connection2(h=BASE_H, 
         dx = BASE_D + BASE_SHIFT_LEG+2, 
         dy = BASE_W, 
         threaded=false, show=[2], anchor=RIGHT);
 
-/*{
-    difference()
-    {
-        cuboid([CUBE_X, BASE_W, BASE_H], anchor=LEFT, rounding=RC, edges="Z");
-
-        //translate([CUBE_X/2,0,0])
-        //    yrot(180/6)
-        //        ycyl(d = D_C, l=BASE_W+E, $fn=6);
-    }
-}*/
+translate([0,0,BASE_H/2+1])
+    rotate([0,90,0])
+    connection2(h=BASE_H+2, 
+        dx = BASE_D,// + BASE_SHIFT_LEG+2, 
+        dy = BASE_W, 
+        threaded=false, 
+        show=[1], 
+        anchor=RIGHT, 
+        rot_cyl=0);
 
 }
 
 
 module leg()
 {
-    connection(
+    connection2(
         h=BASE_H, 
         dx = BASE_H+LEG_SHIFT_X, 
         dy = BASE_W, 
@@ -97,13 +95,13 @@ module leg()
         anchor=LEFT, 
         slop=SLOP);
 
-    translate([-BASE_H-LEG_SHIFT_X+2,0,0])
+    translate([-BASE_H-LEG_SHIFT_X,-BASE_W/2,0])
     rotate([0,90,0])
     {
         diff()
         {
-        prismoid([BASE_H/4,BASE_W*2],
-                [BASE_H+0.5,BASE_W*2]
+        prismoid([BASE_H/4,BASE_W],
+                [BASE_H,BASE_W]
                     ,h=LEG_L
                     ,shift=[-BASE_H/4,0]
                     , anchor=TOP)
@@ -111,7 +109,7 @@ module leg()
             
             edge_profile(
                 "Y",
-                //except=TOP,
+                except=TOP,
                 //[TOP+RIGHT, BOT+FRONT], 
                     excess=2, convexity=2) 
                 {
@@ -146,7 +144,7 @@ module top()
     
     translate([0,0,TOP_H1/2+BASE_SHIFT_LEG/2])
     rotate([0,90,0])
-    connection(h=BASE_H+2, 
+    connection2(h=BASE_H+2, 
         dx = BASE_D + BASE_SHIFT_LEG+2, 
         dy = BASE_W, 
         threaded=false, 
@@ -166,7 +164,7 @@ translate([
     + BASE_SHIFT_LEG*1.5, 
     -(h/2)+BASE_W,//-BASE_W)/2+BASE_W/2, 
     0])
-connection(
+connection2(
         h = BASE_H, 
         dx = BASE_D + BASE_SHIFT_LEG*1.5, 
         dy = BASE_W, 
@@ -174,7 +172,8 @@ connection(
         show=[2], 
         anchor=LEFT, 
         rot_cyl=0,
-        slop=SLOP);
+        slop=SLOP,
+        only_one_third = true);
 }
 
 

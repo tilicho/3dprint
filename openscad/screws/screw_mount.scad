@@ -6,7 +6,7 @@ NUT_THREAD = "M8";
 SCREW_LEN = 10;
 SCREW_D = "M8";
 THREAD = str(SCREW_D, ",", str(SCREW_LEN));
-THREAD_D_EXT = 10;//10;
+THREAD_D_EXT = 8.5;//10;
 THREAD_LEN_SCREW = 10;
 
 SLOP = 0.2;
@@ -18,9 +18,9 @@ HEAD_TYPE="hex";//"socket";
 $fn=50;
 
 CON_X = 17;
-CON_Y = 3;
+CON_Y = 9;//6;
 CON_Z = 12;
-CON_E = 0;//0.02;
+CON_E = 0.4;//0.02;
 CON_R = 6;
 CON_ANCHOR = LEFT;
 CON_THREADED = true;
@@ -44,7 +44,7 @@ module perform_cut(cut=false)
 }
 
 module hole(hole_len, thread=true, slop=SLOP,
-    teardrop=true)
+    teardrop=true, bevel=true)
 {
     if (thread)
         screw_hole(NUT_THREAD, l=hole_len
@@ -53,7 +53,7 @@ module hole(hole_len, thread=true, slop=SLOP,
                   tolerance="8G", 
                   $slop=slop,
                   teardrop=teardrop,
-                  bevel=true
+                  bevel=bevel
                   );
     else
         screw_hole(NUT_THREAD, l=hole_len, head="none", 
@@ -71,23 +71,61 @@ module hole_hex(hole_len,rot_cyl=180/6)
          l=hole_len+E, $fn=6);
 }
 
-module screw_(anchor=CON_ANCHOR, 
-    screw_len=SCREW_LEN)
+module screw_(
+    screw_len=SCREW_LEN,
+    thread_len=THREAD_LEN_SCREW,
+    head_size=HEAD_SIZE,
+    head_h = HEAD_H,
+    head_type=HEAD_TYPE,
+    cyl_head=true)
 {
     thread = str(SCREW_D, ",", str(screw_len));
 
-    spec = screw_info(thread,head=HEAD_TYPE);
+    spec = screw_info(thread,head=head_type);
     newspec = struct_set(spec,[
-        "head_size",HEAD_SIZE,
-        "head_height",HEAD_H]
+        "head_size",head_size,
+        "head_height",head_h]
         );
 
+    rotate([0,180,0])
     screw(newspec, 
         //tolerance="6e", 
-        thread_len=THREAD_LEN_SCREW, 
+        thread_len=thread_len, 
         atype="shaft",
-        undersize=SLOP_SCREW);
-        //anchor=anchor);
+        undersize=SLOP_SCREW)
+    
+    if (cyl_head)
+    {
+        attach(TOP)
+        {
+        up(head_h/2-0.5)
+            difference()
+            {
+            cyl(d= head_size, h = head_h, texture="trunc_ribs");
+            
+            up(head_h/2)
+            chamfer_cylinder_mask(d=head_size+1, chamfer=1);
+            }
+        }
+    }
+}
+
+module nut_(nut_h=6, nut_size=15)
+{
+    difference()
+    {
+    cyl(d = nut_size, h = nut_h, texture="trunc_ribs"
+        );
+    hole(nut_h+E, bevel=false);
+    
+    up(nut_h/2)
+    chamfer_cylinder_mask(d=nut_size+2, chamfer=1);
+    
+    
+    down(nut_h/2)
+    rotate([180, 0, 0])
+    chamfer_cylinder_mask(d=nut_size+2, chamfer=1);
+    }
 }
 
 
@@ -122,6 +160,51 @@ module connection_base(h, dx, dy, threaded = true, anchor=CON_ANCHOR,
     }
 }
 
+module connection_base2(
+    h = CON_Z, 
+    dx = CON_X, 
+    dy = CON_Y, 
+    threaded = true, 
+    anchor=CON_ANCHOR,
+    rot_cyl = 180/6, 
+    slop=SLOP,
+    only_one_third = false)
+{
+    dx_shift = 0;//sqrt(dx*dx / 4 + h*h/4) - min(dx,h)/2;
+    diff()
+    {
+       cuboid([h, dy, h],
+           rounding=h/2,//CON_R,
+                edges = "Y",
+                except=[RIGHT],
+                anchor=anchor)
+      {
+            if (threaded)
+                tag("remove")
+                rotate([90,0,0])
+                hole(dy+E, slop=slop);
+            else
+                tag("remove")
+                attach(CENTER)
+                hole_hex(dy+E,rot_cyl=rot_cyl);
+       
+            attach(RIGHT)
+            {
+                cuboid([dy, h, dx-h]
+                 ,anchor=BOTTOM);
+            };
+       }
+       
+       tag("remove")
+       translate([h/2,0,0])
+       ycyl(d = h+E*2, h = dy/3+CON_E);
+       
+       tag("remove")
+       translate([h/2,0,0])
+       cuboid([h, dy/3+CON_E, h+E]);
+    }
+}
+
 
 module connection(
     h = CON_Z,
@@ -152,6 +235,38 @@ module connection(
 
 }
 
+module connection2(
+    h = CON_Z,
+    dx = CON_X,
+    dy = CON_Y,
+    threaded = true, 
+    anchor = CON_ANCHOR,
+    show = SHOW,
+    rot_cyl = 180/6,
+    slop=SLOP,
+    only_one_third = false)
+{
+    show_left = len(search(CON_LEFT, show));
+    show_right = len(search(CON_RIGHT, show));
+    
+    shift_y = 0;//(show_left && show_right) ? dy/6 : dy/2;//dy/2+CON_E/2;
+    dx_shift = 0;//sqrt(dx*dx / 4 + h*h/4) - min(dx,h)/2;
+    
+    if (show_left)
+    translate([dx_shift, shift_y,0])
+    connection_base2(h, dx, dy, threaded=threaded, anchor=anchor, rot_cyl = rot_cyl, slop=slop,
+                only_one_third=only_one_third);
+    
+    
+    if (show_right)
+    //rotate([0,45,0])
+    translate([-dx_shift, -shift_y,0])
+    xflip()
+        connection_base2(h, dx, dy, threaded=threaded, anchor=anchor, rot_cyl = rot_cyl, slop=slop,
+        only_one_third=only_one_third);
+
+}
+
 module test_screw()
 {
 
@@ -170,7 +285,7 @@ hole(6, thread=false);
 module test_connection()
 {
 connection(
-        h=12
+        h=13
         ,dx = 60 
         ,dy = 5
         ,threaded=true 
@@ -182,4 +297,14 @@ connection(
 //connection(threaded = CON_THREADED, show=SHOW);
 //test_screw();
 
-test_connection();
+//test_connection();
+
+//connection_base2();
+//connection2(only_one_third = false, threaded=false);
+perform_cut(false)
+{
+!screw_(screw_len=15, thread_len=10, head_size=12, head_h=5, head_type="none");
+
+translate([0,0,15])
+nut_();
+}

@@ -72,11 +72,11 @@ module hole_hex(hole_len,rot_cyl=180/6)
 }
 
 module screw_(
-    screw_len=SCREW_LEN,
-    thread_len=THREAD_LEN_SCREW,
-    head_size=HEAD_SIZE,
-    head_h = HEAD_H,
-    head_type=HEAD_TYPE,
+    screw_len=15,
+    thread_len=15,
+    head_size=12,
+    head_h = 5,
+    head_type="none",
     cyl_head=true)
 {
     thread = str(SCREW_D, ",", str(screw_len));
@@ -189,19 +189,49 @@ module connection_base2(
                 hole_hex(dy+E,rot_cyl=rot_cyl);
        
             attach(RIGHT)
+                {
+                    cuboid([dy, h, dx-h]
+                     ,anchor=BOTTOM);
+                };
+                
+            if (!only_one_third)
             {
-                cuboid([dy, h, dx-h]
-                 ,anchor=BOTTOM);
-            };
+                attach(BOTTOM)
+                {
+                tag("remove")
+                translate([0,0,-h/2])
+                ycyl(d = h+CON_E*2, h = dy/3+CON_E, anchor=CENTER);
+                
+                tag("remove")
+                translate([0,0,-h/2])
+                cuboid([h+CON_E, dy/3+CON_E, h+CON_E], anchor=CENTER);
+                }
+            }
+            else
+            {
+                attach(BOTTOM)
+                //yflip_copy()
+                {
+                tag("remove")
+                translate([0,
+                    -dy/2+2*dy/6-CON_E/2
+                    ,-h/2])
+                {
+                  ycyl(d = h+CON_E, h = 2*dy/3+CON_E, anchor=CENTER);
+                    
+                  cuboid([h+CON_E/2, 2*dy/3+CON_E, h+CON_E/2], anchor=CENTER);
+                }
+                }
+            }
        }
        
-       tag("remove")
-       translate([h/2,0,0])
-       ycyl(d = h+E*2, h = dy/3+CON_E);
+       //tag("remove")
+       //translate([h/2,0,0])
+       //ycyl(d = h+E*2, h = dy/3+CON_E, anchor=CENTER);
        
-       tag("remove")
+       /*#tag("remove")
        translate([h/2,0,0])
-       cuboid([h, dy/3+CON_E, h+E]);
+       cuboid([h, dy/3+CON_E, h+E], anchor=CENTER);*/
     }
 }
 
@@ -272,12 +302,13 @@ module test_screw()
 
 perform_cut(true)
 {
-rotate([0,180,0]) screw_(screw_len=20);
-
-difference()
+perform_cut(false)
 {
-cuboid([20, 10, 5]);
-hole(6, thread=false);
+!screw_();
+//(screw_len=15, thread_len=10, head_size=12, head_h=5, head_type="none");
+
+translate([0,0,15])
+nut_();
 }
 }
 }
@@ -295,16 +326,10 @@ connection(
 }
 //rotate([90,0,0])
 //connection(threaded = CON_THREADED, show=SHOW);
+
 //test_screw();
 
 //test_connection();
 
 //connection_base2();
-//connection2(only_one_third = false, threaded=false);
-perform_cut(false)
-{
-!screw_(screw_len=15, thread_len=10, head_size=12, head_h=5, head_type="none");
-
-translate([0,0,15])
-nut_();
-}
+connection2(dx = 23, dy=5, h=13, show=[2], only_one_third = true, threaded=false, anchor=LEFT);

@@ -41,7 +41,7 @@ TOP_HOLE_H = 5;
 
 
 MODEL = "IPhone13";
-PHONE_W = 2.4;
+PHONE_W = 3;//2.4;
 
 
 
@@ -64,7 +64,7 @@ cyl(d= BASE_D, l=BASE_H);
 //hole(hole_len=BASE_H+E, thread=false);
 }
 
-#zrot_copies(n=3)
+zrot_copies(n=3)
 translate([BASE_D/2-RC+BASE_SHIFT_LEG+0.5, 0, 0])
 connection2(h=BASE_H, 
         dx = BASE_D + BASE_SHIFT_LEG+2, 
@@ -95,7 +95,9 @@ module leg()
         anchor=LEFT, 
         slop=SLOP);
 
-    translate([-BASE_H-LEG_SHIFT_X,-BASE_W/2,0])
+    translate([-BASE_H-LEG_SHIFT_X,
+        0,//-BASE_W/2,
+        0])
     rotate([0,90,0])
     {
         diff()
@@ -103,12 +105,13 @@ module leg()
         prismoid([BASE_H/4,BASE_W],
                 [BASE_H,BASE_W]
                     ,h=LEG_L
-                    ,shift=[-BASE_H/4,0]
+                    ,shift=[(-BASE_H/2+BASE_H/8)//-BASE_H/4,0]
+                    ,0]
                     , anchor=TOP)
             {
             
             edge_profile(
-                "Y",
+                "X",
                 except=TOP,
                 //[TOP+RIGHT, BOT+FRONT], 
                     excess=2, convexity=2) 
@@ -156,19 +159,29 @@ module top()
 
 module phone_mount(model="Iphone13")
 {
-h = BASE_H/2;
+h = BASE_H;
+cube_h = 50;
+MOUNT_L = 30;
+
+translate([0,-get_phone_y(MODEL)/2+0.2,0])
+difference()
+{
 iphone_mount(model=model, h=h, w=PHONE_W, epx=0.3, epz=0.2);
 
 translate([
-    get_phone_x(MODEL)/2+PHONE_W/2+BASE_D 
-    + BASE_SHIFT_LEG*1.5, 
-    -(h/2)+BASE_W,//-BASE_W)/2+BASE_W/2, 
+    get_phone_x(MODEL)/2+PHONE_W/2-cube_h/2-MOUNT_L
+    ,0,0])
+cuboid(cube_h);
+}
+translate([
+    get_phone_x(MODEL)/2+PHONE_W/2+h,//BASE_SHIFT_LEG*1.5, 
+    0,//-(h/2)+BASE_W,//-BASE_W)/2+BASE_W/2, 
     0])
 connection2(
-        h = BASE_H, 
-        dx = BASE_D + BASE_SHIFT_LEG*1.5, 
+        h = h, 
+        dx = h,// + BASE_SHIFT_LEG*1.5, 
         dy = BASE_W, 
-        threaded=true, 
+        threaded=false, 
         show=[2], 
         anchor=LEFT, 
         rot_cyl=0,
@@ -183,7 +196,10 @@ base();
 if (LEGS && !LEG)
 rotate([0,0,60])
 zrot_copies(n= BASE && LEGS ? 3 : 1)
-translate([-BASE_D/2+RC-BASE_SHIFT_LEG, 0, 0])
+translate([
+    -BASE_D/2+RC-BASE_SHIFT_LEG, 
+    2, 
+    0])
 leg();
 
 if (LEG)
@@ -206,7 +222,7 @@ screw_(screw_len=BASE_W*2+2);
 
 
 if (SHOW_MODEL)
-translate([0, 0, get_phone_x(MODEL)+BASE_SHIFT_LEG*1.5+2])
+translate([0, -1.5, get_phone_x(MODEL)])//+BASE_SHIFT_LEG*1.5+2])
 rotate([0,90,0])
 perform_cut(false)
 phone_mount(model=MODEL);

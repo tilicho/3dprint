@@ -45,7 +45,7 @@ if (!cut)
 {
     difference()
     {
-        cuboid([dx, dx, l], 
+        cuboid([dx+2*E, dx+2*E, l+2*E], 
         //rounding=R,
         //edges = ["Z",],
         chamfer = R,
@@ -54,7 +54,7 @@ if (!cut)
         if (THIN_WALLS)
         {
             translate([0,0,dx+W])
-            cuboid([dx-2*W, dx-2*W, L-dx], 
+            cuboid([dx-2*W+2*E, dx-2*W+2*E, L-dx+2*E], 
                 anchor=BOTTOM);
         }
     }

@@ -63,17 +63,25 @@ module hole(hole_len, thread=true, slop=SLOP,
                   //anchor=anchor);
 }
 
-module hole_hex(hole_len,rot_cyl=180/6)
+module hole_hex(
+    hole_len,
+    rot_cyl=180/6,
+    dext = THREAD_D_EXT,
+    dint = 0,
+    anchor=CENTER)
 {
+    dd = dint ? (dint / cos(180/6)) : dext;
+    echo(dd, dext, dint, dd * cos(180.0/12.0), cos(180/12));
+    
     yrot(rot_cyl)
       ycyl(
-         d = THREAD_D_EXT, 
-         l=hole_len+E, $fn=6);
+         d = dd, 
+         l=hole_len+E, $fn=6, anchor=anchor);
 }
 
 module screw_(
     screw_len=15,
-    thread_len=15,
+    thread_len=-1,
     head_size=12,
     head_h = 5,
     head_type="none",
@@ -90,7 +98,7 @@ module screw_(
     rotate([0,180,0])
     screw(newspec, 
         //tolerance="6e", 
-        thread_len=thread_len, 
+        thread_len=thread_len >= 0 ? thread_len : screw_len, 
         atype="shaft",
         undersize=SLOP_SCREW)
     
@@ -110,14 +118,16 @@ module screw_(
     }
 }
 
-module nut_(nut_h=6, nut_size=15)
+module nut_(nut_h=6, nut_size=15, teardrop=false, chamfer=true)
 {
     difference()
     {
     cyl(d = nut_size, h = nut_h, texture="trunc_ribs"
         );
-    hole(nut_h+E, bevel=false);
+    hole(nut_h+E, bevel=false, teardrop=teardrop);
     
+    if (chamfer)
+    {
     up(nut_h/2)
     chamfer_cylinder_mask(d=nut_size+2, chamfer=1);
     
@@ -125,6 +135,7 @@ module nut_(nut_h=6, nut_size=15)
     down(nut_h/2)
     rotate([180, 0, 0])
     chamfer_cylinder_mask(d=nut_size+2, chamfer=1);
+    }
     }
 }
 
@@ -329,7 +340,7 @@ connection(
 
 //test_screw();
 
-//test_connection();
+test_connection();
 
 //connection_base2();
-connection2(dx = 23, dy=5, h=13, show=[2], only_one_third = true, threaded=false, anchor=LEFT);
+//connection2(dx = 23, dy=5, h=13, show=[2], only_one_third = true, threaded=false, anchor=LEFT);

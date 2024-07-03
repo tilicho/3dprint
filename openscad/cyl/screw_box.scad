@@ -47,28 +47,30 @@ module up_screw()
     {
         attach(TOP) move([0,0,-(L-TL)-WALL_C]) cyl(d=M+WALL, l = L-TL+WALL_C, center=false, chamfer2=Chamfer);
         
-        tag("remove") move([0,0,-1-L-WALL_C]) attach(TOP) cyl(d=D, l=L, center=false, chamfer2=Chamfer);
+        tag("remove") move([0,0,-1-L-WALL_C]) attach(TOP) cyl(d=D-1, l=L, center=false, chamfer2=Chamfer);
         
-        tag("remove") move([0,0,-L+TL+1]) attach(TOP) cyl(d=din, l=L-TL-WALL, center=false, chamfer2=Chamfer);
+       // tag("remove") move([0,0,-L+TL+1]) attach(TOP) cyl(d=din, l=L-TL-WALL, center=false, chamfer2=Chamfer);
         
     };
 
-    move([0, 0, TL+3.8]) chamfer_cyl(D, din);    
+    //#move([0, 0, TL])//+3.8]) 
+    //    chamfer_cyl(D, din);    
     //echo("D", D, "Din", din);
     
 }
 
 module down_screw()
 {
+    tl2 = 0;//TL2;
     diff()
-    cyl(d=M+WALL, l=L+WALL_C+TL2, anchor=TOP, $fn=FN_OUTER, chamfer1=Chamfer)
+    cyl(d=M+WALL, l=L+WALL_C+tl2, anchor=TOP, $fn=FN_OUTER, chamfer1=Chamfer)
     {
         attach(TOP) 
             screw_hole(MS, l=TL2, head="none", thread=true, anchor=TOP, tolerance="8G", $slop=0.1);//, bevel1="reverse");
         
-        tag("remove") move([0, 0, -L-TL2]) attach(TOP) cyl(d=D, l=L+TL2, center=false, chamfer1=Chamfer);
+        tag("remove") move([0, 0, -L-tl2]) attach(TOP) cyl(d=D, l=L+tl2, center=false, chamfer1=Chamfer);
         
-        tag("remove") move([0,0,-L-TL2]) attach(TOP) cyl(d=D + WALL * 1.8, l=L, center=false, chamfer1=Chamfer);
+        tag("remove") move([0,0,-L-tl2]) attach(TOP) cyl(d=D + WALL * 1.8, l=L-TL2, center=false, chamfer1=Chamfer);
     }
 }
 

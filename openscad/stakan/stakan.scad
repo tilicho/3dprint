@@ -7,12 +7,17 @@ H = 65.0;//[0:0.1:200]
 W = 1.2;//[0:0.1:100]
 Wh = 1.2;//[0:0.1:100]
 Hhat = 10.0;//[0:0.1:100]
-E = 0;////[0:0.1:100]
+E = 0.1;////[0:0.1:100]
 
 $fn = 50;
 CUT = true;
 HAT = false;
 BODY = true;
+SEPERATOR = false;
+SEPERATOR_UP = false;
+SEP_W_UP = 1.8;
+D_SEP_UP = 4;
+N_SEP = 4;
 
 module perform_cut()
 {
@@ -34,16 +39,50 @@ module obj()
 
 if (BODY)
 {
-    difference()
+    diff()
     {
 
     cyl(d = D2, d2 = D1, h = H);
 
+    //if (SEPERATOR)
+    //{
+    //    tag("keep")
+    //    cuboid([D1/2,W,H], anchor=LEFT);
+    //}
+    
+    tag("remove")
     translate([0,0,W])
     cyl(d = D2-2*W, d2 = D1-2*W, h = H);
+    
+    
 
     }
+    
 }
+
+if (SEPERATOR)
+    {
+        sep_tolerance = 0.2;
+        
+        tag("keep")
+        translate([0,0,H/2-SEP_W_UP])
+        cyl(d=D_SEP_UP-1.5,h=SEP_W_UP-0.2, anchor=BOTTOM);
+     
+  //perform_cut()   
+        tag("keep")
+        zrot_copies(n=N_SEP)
+        difference()
+        {
+            translate([0,0,-H/2+W+sep_tolerance])
+            cuboid([D1/2,W,H-SEP_W_UP], anchor=LEFT+BOTTOM);
+    
+            difference()
+            {
+            cyl(d = D2+4*W, d2 = D1+4*W, h = H);
+            cyl(d = D2-sep_tolerance-2*W, d2 = D1-sep_tolerance-2*W, h = H+0.1);
+            }
+        }
+    }
 
 if (HAT)
 {
@@ -57,6 +96,32 @@ if (HAT)
     translate([0,0,-Wh])
     cyl(d = D1 + E,  h = Hhat);
 
+    }
+}
+
+if (SEPERATOR_UP)
+{
+    sep_tolerance = 0.8;
+
+    color("green")
+    difference()
+    {
+       translate([0,0,H/2-W])
+       cyl(d=D2+2*W, d2=D1+2*W, h=W, 
+        anchor=BOTTOM);
+       
+        translate([0,0,H/2-SEP_W_UP])
+        cyl(d=D_SEP_UP,h=SEP_W_UP, anchor=BOTTOM);
+        
+       difference()
+       {
+            cyl(d = D2+4*W, d2 = D1+4*W, h = H);
+            cyl(d = D2-2*W-sep_tolerance, d2 = D1-2*W-sep_tolerance, h = H+0.1);
+       };
+       
+       pie_slice(d = D2-2*W+sep_tolerance, d2 = D1-2*W+sep_tolerance, h = H, ang=360/N_SEP);
+       
+       
     }
 }
 

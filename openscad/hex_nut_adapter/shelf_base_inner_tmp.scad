@@ -1,10 +1,11 @@
 include <BOSL2/std.scad>
 
-DX = 7.9;//7.8;//10.6;
-LEN = 25;
+DX = 7.9;//big 17.0 //7.8;//10.6;
+LEN = 25;//big 50
 R = 0.9;
 
 W = 1.2;
+W2 = 1.8;//small 1.2
 $fn = 50;
 
 CUT = false;
@@ -19,8 +20,8 @@ CUT_THROUGH_MODE = 0;
 THIN_WALLS = true;
 
 CORNER = true;
-CORNER_MODE = "3d"; //["3d", "2d", "4d", "2ds"]
-
+CORNER_MODE = "3d"; //["3d", "2d", "4d", "2ds", "5d"]
+CHAMFER_W = 1.2;
 
 FULL_CROSS = CORNER_MODE == "4d";
 TWO_D_CROSS = (CORNER_MODE == "2d") || (CORNER_MODE == "2ds");
@@ -28,7 +29,9 @@ THRE_D_CROSS = CORNER_MODE == "3d";
 
 ROTATED_TWO_D_CROSS = (CORNER_MODE == "2ds");
 
-L = FULL_CROSS ? LEN * 4/3 : LEN;
+FIVE_D = (CORNER_MODE == "5d");
+
+L = FULL_CROSS || FIVE_D ? LEN * 4/3 : LEN;
 
 module perform_cut()
 {
@@ -99,7 +102,7 @@ difference()
 {
     union()
     {
-        lk = FULL_CROSS ? 1.5 : 1.0;
+        lk = FULL_CROSS || FIVE_D ? 1.5 : 1.0;
         
         sq_base(false);
 
@@ -112,10 +115,15 @@ difference()
             rotate([0,90,0])
             sq_base(false);
             
-            if (FULL_CROSS) 
+            if (FULL_CROSS || FIVE_D) 
             {
                 rotate([0,180,0])
                     sq_base(false);
+                    
+                if (FIVE_D)
+                rotate([0,-90,0])
+                    sq_base(false);
+                
                 
             }
             
@@ -123,10 +131,12 @@ difference()
          }
          
          if (THRE_D_CROSS)
-            cuboid(DX+2*W, chamfer=W, 
+         {
+            cuboid(DX+2*W2, chamfer=W, 
                 edges=[[0, -1, 1], 
                     [1, 0, 1],
                     [1,-1,0]]); 
+         }
          else
          {
             if (ROTATED_TWO_D_CROSS)
@@ -146,7 +156,10 @@ difference()
             }
             else
             {
-                cuboid(DX+2*W, chamfer=W, edges="X"); 
+                cuboid(DX+2*W, 
+                    chamfer=CHAMFER_W, 
+                    //edges="X"
+                    ); 
             }
         }
     };
@@ -166,7 +179,7 @@ difference()
 
 module turn_full_cross()
 {
-    if (FULL_CROSS || ROTATED_TWO_D_CROSS) 
+    if (FULL_CROSS || ROTATED_TWO_D_CROSS || FIVE_D) 
         rotate([180,0,0]) children();
     else
         children();
@@ -190,7 +203,7 @@ module print_cross()
             cross();
         }
 
-        if (!FULL_CROSS)
+        if (!(FULL_CROSS || FIVE_D))
         {
             if (ROTATED_TWO_D_CROSS)
             {
@@ -202,7 +215,7 @@ module print_cross()
             }
             else
             {
-                translate([0,0,(DX+W)*sin(45)])
+                translate([0,0,(DX)*sin(45)])
                 cuboid([DX*3, DX*3, DX*2], rounding=R,
                 edges = "Z",
                 anchor=TOP);
@@ -212,15 +225,16 @@ module print_cross()
         {
             dz = sqrt(sqr(DX+W*4)*2) * sin(45);
             dz2 = (L+DX+2*W)*sin(45)-dz;
-            #translate([0,0,dz2])
+            translate([0,0,dz2])
             cuboid([L*2, L*2, DX*2], rounding=R,
                 edges = "Z",
                 anchor=BOTTOM);
                 
-            #translate([0,0,-(L+W*2)*sin(45)+DX/2])
+            translate([0,0,-(L+W)*sin(45)+DX/4])
             cuboid([L*2, L*2, DX*2], rounding=R,
                 edges = "Z",
                 anchor=BOTTOM);
+            
         }
     }
     

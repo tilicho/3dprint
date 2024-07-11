@@ -9,7 +9,7 @@ THREAD = str(SCREW_D, ",", str(SCREW_LEN));
 THREAD_D_EXT = 8.5;//10;
 THREAD_LEN_SCREW = 10;
 
-SLOP = 0.2;
+SLOP = 0.0;//0.2 for vertical
 SLOP_SCREW = 0.05;
 HEAD_SIZE = 10;
 HEAD_H = 10;
@@ -44,7 +44,7 @@ module perform_cut(cut=false)
 }
 
 module hole(hole_len, thread=true, slop=SLOP,
-    teardrop=true, bevel=true)
+    teardrop=true, bevel=true, anchor=CENTER)
 {
     if (thread)
         screw_hole(NUT_THREAD, l=hole_len
@@ -53,14 +53,15 @@ module hole(hole_len, thread=true, slop=SLOP,
                   tolerance="8G", 
                   $slop=slop,
                   teardrop=teardrop,
-                  bevel=bevel
+                  bevel=bevel,
+                  anchor=anchor
                   );
     else
         screw_hole(NUT_THREAD, l=hole_len, head="none", 
                   thread=false,  
                   //tolerance="8G", 
-                  $slop=slop);
-                  //anchor=anchor);
+                  $slop=slop,
+                  anchor=anchor);
 }
 
 module hole_hex(

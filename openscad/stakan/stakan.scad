@@ -9,7 +9,7 @@ Wh = 1.2;//[0:0.1:100]
 Hhat = 10.0;//[0:0.1:100]
 E = 0.1;////[0:0.1:100]
 
-$fn = 50;
+$fn = 80;
 CUT = true;
 HAT = false;
 BODY = true;
@@ -19,6 +19,7 @@ SEP_W_UP = 1.8;
 SEP_W_UP2 = 1.2;
 D_SEP_UP = 4;//[0:0.1:200]
 N_SEP = 4;
+ChamferHat = 1;
 
 module perform_cut()
 {
@@ -68,7 +69,7 @@ if (BODY)
     diff()
     {
 
-    cyl(d = D2, d2 = D1, h = H);
+    cyl(d = D2, d2 = D1, h = H, chamfer1=ChamferHat);
 
     //if (SEPERATOR)
     //{
@@ -78,7 +79,7 @@ if (BODY)
     
     tag("remove")
     translate([0,0,W])
-    cyl(d = D2-2*W, d2 = D1-2*W, h = H);
+    cyl(d = D2-2*W, d2 = D1-2*W, h = H, chamfer1=ChamferHat);
     
     
 
@@ -113,10 +114,10 @@ if (HAT)
     difference()
     {
 
-    cyl(d = D1 + E + 2*Wh, h = Hhat);
+    cyl(d = D1 + E + 2*Wh, h = Hhat, chamfer2=ChamferHat);
 
     translate([0,0,-Wh])
-    cyl(d = D1 + E,  h = Hhat);
+    cyl(d = D1 + E,  h = Hhat, chamfer2=ChamferHat);
 
     }
 }

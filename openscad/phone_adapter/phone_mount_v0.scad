@@ -156,7 +156,7 @@ module top()
     
 }
 
-module phone_mount(model="Iphone13")
+module phone_mount(model="Iphone13", cut_top=false)
 {
 h = BASE_H;
 //iphone_mount(model=model, h=h, w=PHONE_W, epx=0.3, epz=0.2);
@@ -167,6 +167,7 @@ difference()
 {
 iphone_mount(model=model, h=h, w=PHONE_W, epx=0.3, epz=0.2);
 
+if (cut_top)
 translate([
     get_phone_x(MODEL)/2+PHONE_W/2-cube_h/2-MOUNT_L
     ,0,0])

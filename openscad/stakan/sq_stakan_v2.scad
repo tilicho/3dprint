@@ -38,6 +38,32 @@ module perform_rotate()
         
     else children();
 }
+CH_EXT = 1;
+
+module airpods_edges_ext(except=TOP)
+{
+    edge_profile(
+        "Y",
+        except=except,
+        //[TOP+RIGHT, BOT+FRONT], 
+            excess=2, convexity=2) {
+       mask2d_chamfer(x=CH_EXT); //mask2d_roundover(h=CH_EXT,mask_angle=$edge_angle);
+    }
+    
+    edge_profile(
+        "X",
+        except=except,
+        //[TOP+RIGHT, BOT+FRONT], 
+            excess=2, convexity=2) {
+       mask2d_chamfer(x=CH_EXT);
+       //mask2d_roundover(h=CH_EXT,mask_angle=$edge_angle);
+    }
+    
+    corner_mask(except=except)
+        chamfer_corner_mask(chamfer=CH_EXT);
+    
+}
+
 
 module obj()
 {
@@ -48,6 +74,7 @@ if (BODY)
     {
 
     prismoid([D1, DY1], [D2, DY2], rounding=R, h = H);
+   
     //cyl(d = D2, d2 = D1, h = H);
 
     translate([0,0,W])

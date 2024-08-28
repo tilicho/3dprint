@@ -9,7 +9,7 @@ THREAD = str(SCREW_D, ",", str(SCREW_LEN));
 THREAD_D_EXT = 8.5;//10;
 THREAD_LEN_SCREW = 10;
 
-SLOP = 0.0;//0.2 for vertical
+SLOP = 0.2;//0.2 for vertical
 SLOP_SCREW = 0.05;
 HEAD_SIZE = 10;
 HEAD_H = 10;

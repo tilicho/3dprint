@@ -28,6 +28,7 @@ CUT_CIRCLE = true;
 CIRCLE_D = 2.0 * (Hhat * 2.0 / 3.0);
 
 TEST = false;
+SHIFTED = true;
 
 module perform_cut()
 {
@@ -44,6 +45,12 @@ module perform_rotate()
     else children();
 }
 
+module shifted_prismoid(dx, dy, dx2, dy2, h = 0)
+{
+prismoid([dx, dy], [dx2, dy2], 
+    shift=[SHIFTED ? (dx-dx2)/2 : 0, 0], rounding=R, h = h);
+}
+
 module obj()
 {
 
@@ -52,31 +59,29 @@ if (BODY)
     diff()
     {
 
-        prismoid([D1, DY1], [D2, DY2], rounding=R, h = H);
+        shifted_prismoid(D1+2*W, DY1+2*W, D2+2*W, DY2+2*W, h = H);
         //cyl(d = D2, d2 = D1, h = H);
 
         tag("remove")
         translate([0,0,W])
-        prismoid([D1-2*W, DY1 - 2*W], 
-                 [D2 - 2*W, DY2 - 2*W], 
-                 rounding=R, h = H + E);
+        shifted_prismoid(D1, DY1, 
+                 D2, DY2, 
+                 h = H + E);
         
         //cyl(d = D2-2*W, d2 = D1-2*W, h = H);
         
         if (OVERHAT)
         {
-            translate([0, 0, H])
+            translate([SHIFTED ? (D1-D2)/2: 0, 0, H])
             {
                 difference()
                 {
-                    prismoid([D2, DY2], [D2, DY2], rounding=R, h = OVERHAT_H);
+                    shifted_prismoid(D2+2*W, DY2+2*W, D2+2*W, DY2+2*W, h = OVERHAT_H);
                     
-                    prismoid([D2-2*W, DY2-2*W], [D2-2*W, DY2-2*W], rounding=R, h = OVERHAT_H + E);
+                    shifted_prismoid(D2, DY2, D2, DY2, h = OVERHAT_H + E);
                 }
             
-                if (TEST)
-                color("red")
-                    prismoid([42, 26], [42, 26], h = OVERHAT_H);
+                
             }
         }
 
@@ -96,20 +101,20 @@ if (BODY)
 if (HAT)
 {
     perform_rotate()
-    translate([0,0,H + Hhat])//+ Wh*2])
+    translate([SHIFTED ? (D1-D2)/2: 0,0,H + Hhat])//+ Wh*2])
     difference()
     {
 
-    prismoid([D2 + E + 2*Wh, DY2 + E + 2*Wh],
-            [D2 + E + 2*Wh, DY2 + E + 2*Wh], 
-            rounding=R, h = Hhat);
+    shifted_prismoid(D2 + E + 4*Wh, DY2 + E + 4*Wh,
+            D2 + E + 4*Wh, DY2 + E + 4*Wh, 
+            h = Hhat);
     //cyl(d = D1 + E + 2*Wh, h = Hhat);
 
     translate([0,0,-Wh])
-    prismoid(
-        [D2 + E, DY2 +E], 
-        [D2 + E, DY2 +E], 
-        rounding=R, h = Hhat);
+    shifted_prismoid(
+        D2 + E +2*W, DY2 +E+2*W, 
+        D2 + E+2*W, DY2 +E+2*W, 
+        h = Hhat);
     //cyl(d = D1 + E,  h = Hhat);
 
     }

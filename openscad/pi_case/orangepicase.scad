@@ -20,7 +20,7 @@ HOLE_X = 50;
 HOLE_Y = 45;
 
 DI = 3.2;
-DO = 8;
+DO = 5.5;
 
 W = 1.2;
 E = 0.01;
@@ -199,10 +199,10 @@ module top()
     translate([HOLE_X/2, HOLE_Y/2, dz/2+ PIN_TOP/2 + BOTTOM_Z/2])
     zcyl(d=DI, h = PIN_TOP+BOTTOM_Z+E+dz);
     
-    #translate([0,0,0.4])
+    #translate([0,0,0.8])
     orangepi_base(show_base=false, show_back_pin=false);
     
-    #translate([0,WD*2,0.4])
+    #translate([0,WD*2,0.8])
     orangepi_base(show_base=false, show_back_pin=false);
     
     translate([0,0,PIN_TOP/2])

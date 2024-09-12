@@ -96,7 +96,7 @@ module airpods_edges_ext(except=TOP)
     
     corner_mask(except=except)
         chamfer_corner_mask(chamfer=CH_EXT);
-    
+        //rounding_corner_mask(r=CH_EXT*2);
 }
 
 module rprismoid(x1,y1,x2,y2,r,h, except=TOP)

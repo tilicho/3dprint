@@ -15,7 +15,7 @@ Wh = 1.2;//[0:0.1:200]
 Hhat = 10.0;//[0:0.1:200]
 E = 0.1;////[0:0.1:200]
 R = 5;////[0:0.1:200]
-$fn = 50;
+$fn = 40;
 CUT = false;
 HAT = true;
 BODY = true;
@@ -23,6 +23,7 @@ BODY = true;
 CUT_CIRCLE = true;
 
 CIRCLE_D = 2.0 * (Hhat * 2.0 / 3.0);
+CH_EXT = 2;
 
 module perform_cut()
 {
@@ -38,30 +39,52 @@ module perform_rotate()
         
     else children();
 }
-CH_EXT = 1;
 
-module airpods_edges_ext(except=TOP)
+module round_facet(dx, dy, dz, r, chamfer=0)
 {
-    edge_profile(
-        "Y",
-        except=except,
-        //[TOP+RIGHT, BOT+FRONT], 
-            excess=2, convexity=2) {
-       mask2d_chamfer(x=CH_EXT); //mask2d_roundover(h=CH_EXT,mask_angle=$edge_angle);
+    scale([1.01,1.01,1.01])
+    difference()
+    {
+        translate([dx/2,dy/2,0])
+        translate([-r/2,-r/2,0])
+        cuboid([r, r, dz]);
+        
+        //tag("remove")
+        translate([dx/2-r,dy/2-r,0])
+        zcyl(r=r, h=dz+E*2, chamfer=chamfer);
     }
-    
-    edge_profile(
-        "X",
-        except=except,
-        //[TOP+RIGHT, BOT+FRONT], 
-            excess=2, convexity=2) {
-       mask2d_chamfer(x=CH_EXT);
-       //mask2d_roundover(h=CH_EXT,mask_angle=$edge_angle);
+}
+
+module facet_cube(dx, dy, dz, r, chamfer=CH_EXT)
+{
+    difference()
+    {   
+        cuboid([dx, dy, dz-E], 
+            edges=[BOTTOM,TOP], 
+            chamfer=CH_EXT);
+        
+        yflip_copy()
+        xflip_copy()
+        round_facet(dx,dy,dz,r-3, chamfer=chamfer);
     }
-    
-    corner_mask(except=except)
-        chamfer_corner_mask(chamfer=CH_EXT);
-    
+}
+
+
+
+module rprismoid_ext(x1,y1,x2,y2,r,h, except=TOP)
+{
+    diff()
+    {
+    prismoid([x1, y1], [x2, y2], 
+        h = h,
+        //chamfer=CH_EXT,
+        rounding=r
+        )
+    {
+        airpods_edges_ext(except);
+    }
+    }
+
 }
 
 
@@ -73,7 +96,11 @@ if (BODY)
     difference()
     {
 
-    prismoid([D1, DY1], [D2, DY2], rounding=R, h = H);
+    //rprismoid_ext(D1, DY1, D2, DY2, R, H);
+    prismoid([D1, DY1], 
+             [D2, DY2], 
+             rounding=R, h = H + E);
+    
    
     //cyl(d = D2, d2 = D1, h = H);
 
@@ -122,3 +149,4 @@ if (HAT)
 
 perform_cut()
 obj();
+

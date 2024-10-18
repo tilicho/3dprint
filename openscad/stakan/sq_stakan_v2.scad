@@ -20,6 +20,8 @@ CUT = false;
 HAT = true;
 BODY = true;
 
+INNER_WALLS_COUNT = 4;
+
 CUT_CIRCLE = true;
 
 CIRCLE_D = 2.0 * (Hhat * 2.0 / 3.0);
@@ -120,6 +122,13 @@ if (BODY)
     }
     
     }
+    
+    if (INNER_WALLS_COUNT)
+    {
+        INNER_WALLS_DX = (DY2 - 2*W) / (INNER_WALLS_COUNT);
+        ycopies(INNER_WALLS_DX, INNER_WALLS_COUNT-1)
+            cuboid([D2-E, W, H*2/3], anchor=BOTTOM);
+    }
 }
 
 if (HAT)
@@ -143,6 +152,8 @@ if (HAT)
 
     }
 }
+
+
 
 }
 

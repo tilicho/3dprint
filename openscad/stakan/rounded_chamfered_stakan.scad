@@ -58,12 +58,12 @@ if (HAT)
     translate([0,0,H+ Wh*2])
     difference()
     {
-    facet_cube(D2 + E + 2*Wh, D2 + E + 2*Wh, rounding=R, 
+    facet_cube(D1 + E + 2*Wh, D2 + E + 2*Wh, rounding=R, 
         h = Hhat, chamfer2=CH_EXT);
     //cyl(d = D1 + E + 2*Wh, h = Hhat);
 
     translate([0,0,-Wh])
-    facet_cube(D2 + E, D2 + E, rounding=R, h = Hhat, chamfer2=CH_EXT);
+    facet_cube(D1 + E, D2 + E, rounding=R, h = Hhat, chamfer2=CH_EXT);
     //cyl(d = D1 + E,  h = Hhat);
 
     }

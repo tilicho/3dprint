@@ -69,7 +69,7 @@ if (BODY)
     diff()
     {
 
-    cyl(d = D2, d2 = D1, h = H, chamfer1=ChamferHat);
+    cyl(d = D2+2*W, d2 = D1+2*W, h = H, chamfer1=ChamferHat);
 
     //if (SEPERATOR)
     //{
@@ -79,7 +79,7 @@ if (BODY)
     
     tag("remove")
     translate([0,0,W])
-    cyl(d = D2-2*W, d2 = D1-2*W, h = H, chamfer1=ChamferHat);
+    cyl(d = D2, d2 = D1, h = H, chamfer1=ChamferHat);
     
     
 
@@ -114,10 +114,10 @@ if (HAT)
     difference()
     {
 
-    cyl(d = D1 + E + 2*Wh, h = Hhat, chamfer2=ChamferHat);
+    cyl(d = D1 + E + 4*Wh, h = Hhat, chamfer2=ChamferHat);
 
     translate([0,0,-Wh])
-    cyl(d = D1 + E,  h = Hhat, chamfer2=ChamferHat);
+    cyl(d = D1 + E + 2*Wh,  h = Hhat, chamfer2=ChamferHat);
 
     }
 }

@@ -1,0 +1,18 @@
+{
+    "parameterSets": {
+        "stick_splav": {
+            "$fn": "50",
+            "BASE": "2.4",
+            "CUT": "true",
+            "D1": "11",
+            "D2": "14",
+            "ED": "0.4",
+            "EPS": "0.1",
+            "L": "36",
+            "WALL": "1.8"
+        }
+    },
+    "fileFormatVersion": "1",
+    "parameterSets": "",
+    "parameterSets": ""
+}

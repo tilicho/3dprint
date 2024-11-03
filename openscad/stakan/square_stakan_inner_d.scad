@@ -13,8 +13,10 @@ H = 65.0;//[0:0.1:200]
 W = 1.2;//[0:0.1:200]
 Wh = 1.2;//[0:0.1:200]
 Hhat = 10.0;//[0:0.1:200]
-E = 0.1;////[0:0.1:200]
-R = 5;////[0:0.1:200]
+E = 0.10;////[0:0.01:200]
+R = 5.001;////[0:0.1:200]
+
+
 $fn = 40;
 CUT = false;
 HAT = true;
@@ -99,55 +101,56 @@ if (BODY)
     {
 
     //rprismoid_ext(D1, DY1, D2, DY2, R, H);
-    prismoid([D1, DY1], 
-             [D2, DY2], 
-             rounding=R, h = H + E);
+    prismoid([D1+2*W, DY1+2*W], 
+             [D2+2*W, DY2+2*W], 
+             rounding=R, h = H + E + W);
     
    
     //cyl(d = D2, d2 = D1, h = H);
 
     translate([0,0,W])
-    prismoid([D1-2*W, DY1 - 2*W], 
-             [D2 - 2*W, DY2 - 2*W], 
-             rounding=R, h = H + E);
+    prismoid([D1, DY1], 
+             [D2, DY2], 
+             rounding=R, h = H +W + E);
     
     //cyl(d = D2-2*W, d2 = D1-2*W, h = H);
-
+/*
     if (CUT_CIRCLE)
     {
         
         translate([0, 0, H])
         rotate([90, 0, 0])
-        cyl(d = CIRCLE_D, h = DY2 + 2 * E, $fn=6);
+        cyl(d = CIRCLE_D, h = DY2 + 2 * E +2*W, $fn=6);
     }
-    
+  */
+  
     }
     
     if (INNER_WALLS_COUNT)
     {
-        INNER_WALLS_DX = (DY2 - 2*W) / (INNER_WALLS_COUNT);
+        INNER_WALLS_DX = (DY2) / (INNER_WALLS_COUNT);
         ycopies(INNER_WALLS_DX, INNER_WALLS_COUNT-1)
-            cuboid([D2-E, W, H*2/3], anchor=BOTTOM);
+            cuboid([D2-E+2*W, W, H*2/3], anchor=BOTTOM);
     }
 }
 
 if (HAT)
 {
     perform_rotate()
-    translate([0,0,H - Hhat])//+ Wh*2])
+    translate([0,0,H - Hhat+2*Wh+E])//+ Wh*2])
     difference()
     {
 
-    prismoid([D2 + E + 2*Wh, DY2 + E + 2*Wh],
-            [D2 + E + 2*Wh, DY2 + E + 2*Wh], 
-            rounding=R, h = Hhat);
+    prismoid([D2 + E + 2*Wh+2*W, DY2 + E + 2*Wh+2*W],
+            [D2 + E + 2*Wh+2*W, DY2 + E + 2*Wh+2*W], 
+            rounding=R, h = Hhat+Wh);
     //cyl(d = D1 + E + 2*Wh, h = Hhat);
 
     translate([0,0,-Wh])
     prismoid(
-        [D2 + E, DY2 +E], 
-        [D2 + E, DY2 +E], 
-        rounding=R, h = Hhat);
+        [D2 + E+2*W, DY2 +E+2*W], 
+        [D2 + E+2*W, DY2 +E+2*W], 
+        rounding=R, h = Hhat+Wh);
     //cyl(d = D1 + E,  h = Hhat);
 
     }

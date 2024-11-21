@@ -17,6 +17,8 @@ HAT = true;
 BODY = true;
 CH_EXT = 3;
 
+LINE_H = 5;
+
 module perform_cut()
 {
     if (CUT)
@@ -50,6 +52,8 @@ if (BODY)
     //cyl(d = D2-2*W, d2 = D1-2*W, h = H);
 
     }
+    
+    
 }
 
 if (HAT)
@@ -58,7 +62,9 @@ if (HAT)
     translate([0,0,H+ Wh*2])
     difference()
     {
-    facet_cube(D1 + E + 2*Wh, D2 + E + 2*Wh, rounding=R, 
+    facet_cube(
+        D1 + E + 2*Wh, 
+        D2 + E + 2*Wh, rounding=R, 
         h = Hhat, chamfer2=CH_EXT);
     //cyl(d = D1 + E + 2*Wh, h = Hhat);
 

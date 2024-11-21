@@ -1,5 +1,5 @@
 include <BOSL2/std.scad>
-include <BOSL2/screws.scad>
+//include <BOSL2/screws.scad>
 
 D1 = 45.0;//[0:0.1:250]
 DY1 = 15.0;//[0:0.1:250]
@@ -28,6 +28,7 @@ CUT_CIRCLE = true;
 
 CIRCLE_D = 2.0 * (Hhat * 2.0 / 3.0);
 CH_EXT = 2;
+H_WALL = 5;
 
 module perform_cut()
 {
@@ -130,7 +131,7 @@ if (BODY)
     {
         INNER_WALLS_DX = (DY2) / (INNER_WALLS_COUNT);
         ycopies(INNER_WALLS_DX, INNER_WALLS_COUNT-1)
-            cuboid([D2-E+2*W, W, H*2/3], anchor=BOTTOM);
+            cuboid([D2-E+2*W, W, H_WALL], anchor=BOTTOM);
     }
 }
 

@@ -17,7 +17,7 @@ HAT = true;
 BODY = true;
 CH_EXT = 3;
 
-LINE_H = 5;
+//LINE_H = 5;
 
 module perform_cut()
 {

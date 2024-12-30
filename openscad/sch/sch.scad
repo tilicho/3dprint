@@ -1,6 +1,6 @@
 include <BOSL2/std.scad>
 
-Y = 55;
+Y = 29;
 L = 5;
 DL = 5;
 H = 3.6;

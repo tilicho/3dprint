@@ -1,7 +1,7 @@
 include <BOSL2/std.scad>
 
 D = 23;
-W = 3;
+W = 3.5;
 H = 5;
 $fn = 50;
 E = 0.1;

@@ -50,9 +50,19 @@ difference()
 {
 cuboid([L,W,L], rounding=0, edges="Y");
 
+
+
+
 rotate([0,-45,0])
+{
 cuboid([L*2,W+E,L*2], rounding=0, edges="Z", anchor=BOTTOM);
 
+dzz = L * sqrt(2) / 2;
+
+translate([0,0,-dzz+1.2])
+cuboid([L,W,L], rounding=0, edges="Y", anchor=TOP);
+
+}
 
 zt = L / 2 - SCREW_INNER_L;
 

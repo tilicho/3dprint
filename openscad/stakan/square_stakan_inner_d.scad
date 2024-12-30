@@ -13,9 +13,9 @@ H = 65.0;//[0:0.1:200]
 W = 1.2;//[0:0.1:200]
 Wh = 1.2;//[0:0.1:200]
 Hhat = 10.0;//[0:0.1:200]
-E = 0.10;////[0:0.01:200]
+E = 0.6;//0.2;// 0.2 for pla for petg - 0.10;////[0:0.01:200]
 R = 5.001;////[0:0.1:200]
-
+E2 = 0.4;
 
 $fn = 40;
 CUT = false;
@@ -102,16 +102,16 @@ if (BODY)
     {
 
     //rprismoid_ext(D1, DY1, D2, DY2, R, H);
-    prismoid([D1+2*W, DY1+2*W], 
-             [D2+2*W, DY2+2*W], 
+    prismoid([D1+2*W+E2, DY1+2*W+E2], 
+             [D2+2*W+E2, DY2+2*W+E2], 
              rounding=R, h = H + E + W);
     
    
     //cyl(d = D2, d2 = D1, h = H);
 
     translate([0,0,W])
-    prismoid([D1, DY1], 
-             [D2, DY2], 
+    prismoid([D1+E2, DY1+E2], 
+             [D2+E2, DY2+E2], 
              rounding=R, h = H +W + E);
     
     //cyl(d = D2-2*W, d2 = D1-2*W, h = H);

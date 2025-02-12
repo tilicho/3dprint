@@ -27,7 +27,8 @@ SCALE_D = 0.4;
 
 SHOW_BOARD = false;
 
-SHOW_TOP = false;
+SHOW_TOP = true;
+SHOW_BOTTOM = false;
 
 TOP_HEAD_SHIFT = 2;
 
@@ -78,12 +79,22 @@ module top()
 
     }
 
-    translate([0,0,H_TOP])
     difference()
     {
-    top_head();
-    shift_model_center()
-    orange_pi_plate_holes(d = DI, h=H_TOP+E);
+        translate([0,0,H_TOP])
+        difference()
+        {
+            top_head();
+            shift_model_center()
+            orange_pi_plate_holes(d = DI, h=H_TOP+E);
+        
+        }
+        
+        
+        shift_model_center()
+        orange_pi_3_zero_model(shift_ports=5,
+                scale_d=SCALE_D,
+                h = H_TOP+2*WALL);
     }
 
 }
@@ -146,4 +157,5 @@ if (SHOW_TOP)
 if (SHOW_BOARD)
    #board();
 
+if (SHOW_BOTTOM)
 bottom();

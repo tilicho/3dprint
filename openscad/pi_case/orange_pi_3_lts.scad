@@ -1,7 +1,7 @@
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
 
-H = 15; // Fixed height of all boxes
+H = 14; // Fixed height of all boxes
 H_USB_C = 5;
 H_HDMI = 7;
 H_JACK = 6;
@@ -15,7 +15,7 @@ H_DX = 3;
 H_DY = 3;
 H_DD = 3;
 
-R_BASE = 2;
+R_BASE = 0;
 
 $fn = 50;
 
@@ -48,13 +48,20 @@ module draw_box(x, y, dx, dy, h,
         BOARD_Y,
         dy);
         
-    calc_z = h < 0 ? (-BOARD_Z+h) : 0;
+    calc_z = (h < 0 ? (-BOARD_Z+h) : 0);
     
-    calc_h = abs(h) + scale_d;
+    calc_h = abs(h) + (h < 0 ? BOARD_Z : 0);
     
 
-    translate([calc_x-scale_d, calc_y-scale_d, calc_z])
-        cube([dx+2*scale_d, dy+2*scale_d, calc_h]);
+    translate([calc_x-scale_d, calc_y-scale_d, calc_z-scale_d])
+        cube([dx+2*scale_d, dy+2*scale_d, calc_h + 2*scale_d]);
+}
+
+module draw_cyl(x,y,z,d,h)
+{
+    translate([x,y,z])
+    zcyl(d=d, h = h, anchor=BOTTOM);
+
 }
 
 module orange_pi_plate_holes(h = H, d = H_DD)
@@ -103,14 +110,14 @@ module orange_pi_3_zero_model(
 
 
 boxes = [
-    [0, 6, 10, 7, H],
-    [0, 14, 18, 16, H],
-    [0, 35, 14, 13, H],
-    [17, 0, 7, 7, H],
+    [0, 6+1, 10, 8-1, H],
+    [0, 14, 18, 16+6, H],
+    [0, 35, 14, 13, H+2],
+    [17, 0, 7, 7, 9],
     [44,1,33,5,h],
     [59,-4,8,3,h],
     
-    [-7,12,7,8,H_USB_C],
+    [-7,12-0.5,7,8+1,H_USB_C],
     [-7,43,7,5,H_HDMI],
     [41,-10,15,10,H_HDMI],
     [18,-12,7,12,H_JACK],
@@ -118,6 +125,18 @@ boxes = [
     [-14,24,14,15,H_SD],
 ];
 
+COOLER_W = 30;
+COOLER_DW = 3;
+cooler_shift = COOLER_W/2 - COOLER_DW;
+COOLER_D = 3;
+
+cyls = [
+    [BOARD_X/2, BOARD_Y/2, 0, 28, h],
+    [BOARD_X/2+cooler_shift, BOARD_Y/2+cooler_shift, 0, COOLER_D, h],
+    [BOARD_X/2+cooler_shift, BOARD_Y/2-cooler_shift, 0, COOLER_D, h],
+    [BOARD_X/2-cooler_shift, BOARD_Y/2+cooler_shift, 0, COOLER_D, h],
+    [BOARD_X/2-cooler_shift, BOARD_Y/2-cooler_shift, 0, COOLER_D, h],
+];
     
 //scale([scale_f, scale_f, 1])
 //{
@@ -127,6 +146,12 @@ for (box = boxes) {
         box[0], box[1], box[2], box[3], box[4],
         shift_ports,
         scale_d);
+}
+
+for (cy = cyls) {
+    draw_cyl(
+        cy[0], cy[1], cy[2],
+        cy[3], cy[4]);
 }
 
 if (show_base)

@@ -15,22 +15,40 @@ BOARD_Z = get_BOARD_Z();
 R_BASE = 2;
 
 DI = 3.2;
-DO = 5.5;
+DO = 6.8;
 WALL = 1.2;
 E = 0.01;
 
 H_TOP = 25;
 
-H_BOTTOM = 10; // TODO - need screw size!
+H_BOTTOM = 7; // TODO - need screw size!
 
 SCALE_D = 0.4;
 
-SHOW_BOARD = false;
+SHOW_BOARD = true;
 
-SHOW_TOP = true;
-SHOW_BOTTOM = false;
+SHOW_TOP = false;
+SHOW_BOTTOM = true;
+SHOW_HATS = true;
 
 TOP_HEAD_SHIFT = 2;
+
+
+BOLT_LEN = 20;
+BOLT_CUP_LEN = 1.7;
+BOLT_CUP_D = 5;
+BOLT_UP_D = 4.5;
+
+bolt_up_len = BOLT_LEN-H_BOTTOM-WALL-BOARD_Z;
+
+module additional_plate_holes(h=HTOP)
+{
+    yflip_copy()
+    xflip_copy()
+    translate([-BOARD_X/2,-BOARD_Y/2,0])
+    cuboid([6,6,h],anchor=LEFT+FRONT);
+
+}
 
 module top_walls()
 {
@@ -45,13 +63,24 @@ module top_walls()
 
 
     translate([0,0,H_TOP/2])
-    shift_model_center()
     {
     difference()
     {
-    orange_pi_plate_holes(d = DO, h=H_TOP);
-
-    orange_pi_plate_holes(d = DI, h=H_TOP+E);
+        union()
+        {
+            shift_model_center()
+            orange_pi_plate_holes(d = DO, h=H_TOP);
+            additional_plate_holes(h=H_TOP);
+        }
+        
+        
+        shift_model_center()
+        orange_pi_plate_holes(d = DI, h=H_TOP+E);
+        
+        shift_model_center()
+        translate([0,0,(H_TOP-bolt_up_len)/2])
+        orange_pi_plate_holes(d = BOLT_UP_D, h=bolt_up_len);
+        
     }
     }
 }
@@ -79,14 +108,15 @@ module top()
 
     }
 
+    if (SHOW_HATS)
     difference()
     {
-        translate([0,0,H_TOP])
+        translate([0,0,H_TOP+WALL/2])
         difference()
         {
             top_head();
             shift_model_center()
-            orange_pi_plate_holes(d = DI, h=H_TOP+E);
+            orange_pi_plate_holes(d = BOLT_UP_D, h=H_TOP+E);
         
         }
         
@@ -101,25 +131,41 @@ module top()
 
 module bottom_walls()
 {
-    translate([0,0,-H_BOTTOM])
+    bottom_hat_z = 1.2;
+
+    translate([0,0,-H_BOTTOM-BOARD_Z])
     difference()
     {
 
-    cuboid([BOARD_X+WALL*2, BOARD_Y+WALL*2, H_BOTTOM], anchor=BOTTOM, rounding=R_BASE, edges="Z");
+    cuboid([BOARD_X+WALL*2, BOARD_Y+WALL*2, H_BOTTOM+BOARD_Z], anchor=BOTTOM, rounding=R_BASE, edges="Z");
 
-    cuboid([BOARD_X, BOARD_Y, H_BOTTOM+E], anchor=BOTTOM, rounding=R_BASE, edges="Z");
+    cuboid([BOARD_X, BOARD_Y, H_BOTTOM+E+BOARD_Z], anchor=BOTTOM, rounding=R_BASE, edges="Z");
 
     }
 
 
-    translate([0,0,-H_BOTTOM/2])
-    shift_model_center()
+    translate([0,0,-H_BOTTOM/2-BOARD_Z])
     {
     difference()
     {
-    orange_pi_plate_holes(d = DO, h=H_BOTTOM);
+        union()
+        {
+        shift_model_center()  
+        orange_pi_plate_holes(d = DO, h=H_BOTTOM);
+        
+        additional_plate_holes(h=H_BOTTOM);
+        }
 
-    orange_pi_plate_holes(d = DI, h=H_BOTTOM+E);
+
+        shift_model_center()
+        orange_pi_plate_holes(d = DI, h=H_BOTTOM+E);
+    
+        
+        translate([0,0,-H_BOTTOM/2+bottom_hat_z/2])
+        shift_model_center()
+        orange_pi_plate_holes(d = BOLT_CUP_D, h=bottom_hat_z);
+    
+    
     }
     }
 }
@@ -136,12 +182,13 @@ module bottom()
 
     }
     
-    translate([0,0,-H_BOTTOM])
+    if (SHOW_HATS)
+    translate([0,0,-H_BOTTOM-WALL/2-BOARD_Z])
     difference()
     {
     top_head();
     shift_model_center()
-    orange_pi_plate_holes(d = DI, h=H_BOTTOM+E);
+    orange_pi_plate_holes(d = BOLT_CUP_D, h=H_BOTTOM+E);
     }
 }
 

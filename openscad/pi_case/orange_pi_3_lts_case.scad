@@ -14,7 +14,7 @@ BOARD_Z = get_BOARD_Z();
 
 R_BASE = 2;
 
-DI = 3.2;
+DI = 3.5;
 DO = 6.8;
 WALL = 1.2;
 E = 0.01;
@@ -25,19 +25,22 @@ H_BOTTOM = 7; // TODO - need screw size!
 
 SCALE_D = 0.4;
 
-SHOW_BOARD = true;
+SHOW_BOARD = false;
 
-SHOW_TOP = false;
-SHOW_BOTTOM = true;
+SHOW_TOP = true;
+SHOW_BOTTOM = false;
 SHOW_HATS = true;
 
 TOP_HEAD_SHIFT = 2;
 
 
 BOLT_LEN = 20;
-BOLT_CUP_LEN = 1.7;
-BOLT_CUP_D = 5;
-BOLT_UP_D = 4.5;
+BOLT_CUP_LEN = 3;
+BOLT_CUP_D = 6;
+//BOLT_UP_D = 5;
+
+HOLE_UP_PLAV = 5;
+HOLE_UP_PLAV_H = 6;
 
 bolt_up_len = BOLT_LEN-H_BOTTOM-WALL-BOARD_Z;
 
@@ -78,8 +81,12 @@ module top_walls()
         orange_pi_plate_holes(d = DI, h=H_TOP+E);
         
         shift_model_center()
-        translate([0,0,(H_TOP-bolt_up_len)/2])
-        orange_pi_plate_holes(d = BOLT_UP_D, h=bolt_up_len);
+        translate([0,0,(-H_TOP/2+HOLE_UP_PLAV_H/2)])
+        orange_pi_plate_holes(d = HOLE_UP_PLAV, h=HOLE_UP_PLAV_H);
+        
+        //shift_model_center()
+        //translate([0,0,(H_TOP-bolt_up_len)/2])
+        //orange_pi_plate_holes(d = BOLT_UP_D, h=bolt_up_len);
         
     }
     }
@@ -116,7 +123,7 @@ module top()
         {
             top_head();
             shift_model_center()
-            orange_pi_plate_holes(d = BOLT_UP_D, h=H_TOP+E);
+            orange_pi_plate_holes(d = DI, h=H_TOP+E);
         
         }
         
@@ -131,7 +138,7 @@ module top()
 
 module bottom_walls()
 {
-    bottom_hat_z = 1.2;
+    bottom_hat_z = BOLT_CUP_LEN;
 
     translate([0,0,-H_BOTTOM-BOARD_Z])
     difference()

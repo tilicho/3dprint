@@ -1,6 +1,6 @@
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
-use <jetson_nano.scad>
+use <hd_mon.scad>
 
 $fn = 50;
 
@@ -20,19 +20,19 @@ WALL = 1.2;
 E = 0.01;
 E2 = 0.2;
 
-H_TOP = 25;
+H_TOP = 12;
 
-H_BOTTOM = 7; // TODO - need screw size!
+H_BOTTOM = 12; // TODO - need screw size!
 
 SCALE_D = 0.4;
 
 SHOW_BOARD = false;
 
-SHOW_TOP = true;
-SHOW_BOTTOM = false;
+SHOW_TOP = false;
+SHOW_BOTTOM = true;
 SHOW_HATS = true;
 
-TOP_HEAD_SHIFT = 2;
+TOP_HEAD_SHIFT = 0;
 
 
 BOLT_LEN = 20;
@@ -176,6 +176,10 @@ module bottom_walls()
 
         shift_model_center()
         orange_pi_plate_holes(d = DI, h=H_BOTTOM+E);
+        
+        #shift_model_center()
+        translate([0,0,BOARD_Z+H_BOTTOM/2-HOLE_UP_PLAV_H/2-BOARD_Z])//(-BOARD_Z/2-HOLE_UP_PLAV_H/2)])
+        orange_pi_plate_holes(d = HOLE_UP_PLAV, h=HOLE_UP_PLAV_H);
     
         
         translate([0,0,-H_BOTTOM/2+bottom_hat_z/2])

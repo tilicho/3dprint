@@ -1,20 +1,10 @@
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
 
-H = 14; // Fixed height of all boxes
-H2=17;
-H3=19;
-Hpow=10;
 
-H_USB_C = 5;
-H_HDMI = 7;
-H_JACK = 6;
-H_SD = -3.5;
 
-Hmicro=3;
-
-BOARD_X = 79;
-BOARD_Y = 100;
+BOARD_X = 165;//173 - 2.4;
+BOARD_Y = 126 - 3;
 BOARD_Z = 2.1;
 
 H_DX = 3;
@@ -40,7 +30,8 @@ function shift_port(x, shift, max_x, w) =
     
 module draw_box(x, y, dx, dy, h, 
     shift_ports,
-    scale_d) 
+    scale_d,
+    r = 0) 
 {
     calc_x = shift_port(
         x < 0 ? (BOARD_X + x) : x,
@@ -63,7 +54,8 @@ module draw_box(x, y, dx, dy, h,
         cube([
             dx+2*scale_d, 
             dy+2*scale_d, 
-            calc_h + 2*scale_d]);
+            calc_h + 2*scale_d]
+            );
 }
 
 module draw_cyl(x,y,z,d,h,anchor=BOTTOM)
@@ -79,19 +71,22 @@ module draw_cyl(x,y,z,d,h,anchor=BOTTOM)
 
 module additional_plate_holes(h=H,dx=0)
 {
+    w = 7.9;
 
     boxes = [
-        [-6-2, -6-3, 6+2+dx, 6+3+dx, h],
-        [14-0,-7-2,8-0.5,7+2+dx,h],
-        [-7,7,7+dx,7+3,h],
+        [0, 0, w, 9, h],
+        [0, -9, w, 9, h],
+        [-0-8, 0, w, 9, h],
+        [-0-8, -9, w, 9, h],
      ];
 
      translate([0,0,-h/2])
      for (box = boxes) {
         draw_box(
             box[0], box[1], box[2], box[3], box[4],
+            dx,
             0,
-            0);
+            1);
     }
 }
 
@@ -100,9 +95,11 @@ module orange_pi_plate_holes(h = H, d = H_DD)
 {
     cyls = [
         //[17,11,0,d,h],
-        [17,-4,0,d,h],
-        [-4,-4,0,d,h],
-        [-4,11,0,d,h],
+        [4, 4.5, 0, d,h],
+        [-4, 4.5, 0, d,h],
+        [-4, -4.5, 0, d,h],
+        [4, -4.5, 0, d,h],
+        
     ];
 
     for (cy = cyls) {
@@ -132,6 +129,19 @@ orange_pi_plate_holes();
 //    (BOARD_X + scale_d * 2) / BOARD_X,
 //   (BOARD_Y + scale_d * 2) / BOARD_Y);
 
+H = 14; // Fixed height of all boxes
+H2=17;
+H3=19;
+Hpow=10;
+
+H_USB_C = 5;
+H_HDMI = 7;
+H_JACK = 6;
+H_SD = -3.5;
+
+Hmicro=4;
+
+
 
 module orange_pi_3_zero_model(
     show_base = true,
@@ -145,18 +155,10 @@ module orange_pi_3_zero_model(
 
 
 boxes = [
-    [0, 4, 6, 8+3, Hmicro],
-    [0, 15, 21, 16+3, H],
-    [0, 34, 17, 13+3, H2],
-    [0, 50, 17, 13+5, H2],
-    [0,-32,17,17,H3],
-    [0,-10-5,14,9+5,Hpow],
+    [0, 12, 17, 15, -H_HDMI],
+    [0, 24, 12, 30, -Hmicro],
+    //[0, 15, 21, 16+3, H],
     
-    [21,8,50,6,h],
-    //[-7,2,5,5,h],
-    [25,-6,47-1,4,h],
-    [40-2-2*shift_ports, 23-2-shift_ports/4,
-        40+4+2*shift_ports,59+4+shift_ports/2,27],
 ];
 
 COOLER_W = 30;
